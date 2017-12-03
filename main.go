@@ -25,6 +25,17 @@ type HSK struct {
 	Definition string `bson:"Definition" json:"Definition"`
 	Level string `bson:"Level" json:"Level"`
 }
+type CEDICT struct {
+	Traditional string `bson:"Traditional" json:"Traditional"`
+	Simplified string `bson:"Simplified" json:"Simplified"`
+	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
+	Pinyin string `bson:"Pinyin" json:"Pinyin"`
+	Definition string `bson:"Definition" json:"Definition"`
+}
+type CEDICTWITHSIZE struct{
+	Data[] CEDICT `bson:"Data" json:"Data"`
+	Size int `bson:"Size" json:"Size"`
+}
 
 func main() {
 
@@ -52,6 +63,7 @@ func main() {
 	
 	mux.HandleFunc(pat.Get("/getAllHsk"), allHsk(session))
 	mux.HandleFunc(pat.Get("/pagedHsk"), pagedHsk(session))
+	mux.HandleFunc(pat.Get("/pagedcedict"), pagedcedict(session))
 	//mux.HandleFunc(pat.Post("/adduser"), createUser(session))
 	fmt.Println("Starting server listen and serve!")
 	http.ListenAndServe(":8000", mux)

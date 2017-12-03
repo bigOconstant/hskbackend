@@ -14,12 +14,14 @@ const (
     database   = "my_database"
     username   = "dev1"
     password   = "password123"
-    collection = "hsk6"
+    collection = "cedict"
 )
 
 type HSK struct {
-	Hanzi string `bson:"Hanzi" json:"Hanzi"`
-	Pinyin string `bson:"Pinyin" json:"Pinyin"` 
+	Traditional string `bson:"Traditional" json:"Traditional"`
+	Simplified string `bson:"Simplified" json:"Simplified"`
+	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
+	Pinyin string `bson:"Pinyin" json:"Pinyin"`
 	Definition string `bson:"Definition" json:"Definition"`
 }
 
@@ -56,23 +58,24 @@ func main() {
 			col := session.DB(database).C(collection)
 
     pages := getPages()
-    for _, p := range pages {
-        fmt.Println(p.toString())
-    }
+    // for _, p := range pages {
+    //     fmt.Println(p.toString())
+    // }
 
-	fmt.Println(toJson(pages))
+	//fmt.Println(toJson(pages))
 	
 	fmt.Println("Length:",len(pages))
 
 	for i := 0; i < len(pages); i++{
 		col.Insert(pages[i]);
 		//fmt.Println(pages[i])
-	}
+    }
+    fmt.Println("Done inserting")
 
 }
 
 func getPages() []HSK {
-    raw, err := ioutil.ReadFile("./hsk6.json")
+    raw, err := ioutil.ReadFile("./cedict.json")
     if err != nil {
         fmt.Println(err.Error())
         os.Exit(1)
