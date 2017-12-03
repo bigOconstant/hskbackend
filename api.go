@@ -78,6 +78,45 @@ func pagedHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 
 
 
+func pagedcedict(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
+    return func(w http.ResponseWriter,r *http.Request){
+		session := s.Copy()
+		//hskLevel := r.URL.Query().Get("hskLevel")
+		pageSize,err := strconv.Atoi(r.URL.Query().Get("pageSize"))
+		
+
+		pageNumber,err := strconv.Atoi(r.URL.Query().Get("page"))
+
+		var colectionvalue = "cedict"
+		
+		col := session.DB(database).C(colectionvalue)
+
+		 var cedict []CEDICT
+		 count,err := col.Count();
+
+		 if err != nil{
+			 log.Fatal(err)
+		 }
+		 q := col.Find(bson.M{}).Limit(pageSize);
+		 q = q.Skip((pageNumber-1)*pageSize)
+		 err = q.All(&cedict)
+
+		 var response = CEDICTWITHSIZE {cedict,count}
+		 
+
+		respBody, err := json.MarshalIndent(response, "", "  ")
+        if err != nil {
+            log.Fatal(err)
+		}
+		
+		ResponseWithJSON(w, respBody, http.StatusOK)
+
+
+	}
+}
+
+
+
 func allHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
     return func(w http.ResponseWriter,r *http.Request){
 		session := s.Copy()
