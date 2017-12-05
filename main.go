@@ -11,10 +11,10 @@ import (
    
 )
 const (
-    hosts      = "localhost:27017"
-    database   = "my_database"
-    username   = "dev1"
-    password   = "password123"
+    hosts      = "192.168.0.3:27017"
+    database   = "hanyu"
+    username   = "prodcaleb"
+    password   = "studyhanyudev"
 	collection = "hsk"
 	
 )
@@ -64,6 +64,8 @@ func main() {
 	mux.HandleFunc(pat.Get("/getAllHsk"), allHsk(session))
 	mux.HandleFunc(pat.Get("/pagedHsk"), pagedHsk(session))
 	mux.HandleFunc(pat.Get("/pagedcedict"), pagedcedict(session))
+	mux.HandleFunc(pat.Get("/pagedcedictDefinitionSearch"), pagedcedictDefinitionSearch(session))
+	
 	//mux.HandleFunc(pat.Post("/adduser"), createUser(session))
 	fmt.Println("Starting server listen and serve!")
 	http.ListenAndServe(":8000", mux)

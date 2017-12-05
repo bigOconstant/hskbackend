@@ -174,45 +174,43 @@ func allHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 
 }
 
+func pagedcedictDefinitionSearch(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
+    return func(w http.ResponseWriter,r *http.Request){
+		session := s.Copy()
+		pageSize,err := strconv.Atoi(r.URL.Query().Get("pageSize"))
+		definition := r.URL.Query().Get("definition")
 
+		pageNumber,err := strconv.Atoi(r.URL.Query().Get("page"))
 
-
-// func createUser(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
-//     return func(w http.ResponseWriter,r *http.Request){
-// 		session := s.Copy()
-
-// 		var user Users
-// 		var userCheck Users
-
-// 		decoder := json.NewDecoder(r.Body)
-// 		err := decoder.Decode(&user)
-
-// 		if err != nil {
-//             ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
-//             return
-// 		}
+		var colectionvalue = "cedict"
 		
-// 		c := session.DB(database).C(collection)
+		col := session.DB(database).C(colectionvalue)
 
-// 		c.Find(bson.M{"user": user.User}).One(&userCheck)
-// 		fmt.Println(userCheck.User)
+		 var cedict []CEDICT
 		
-// 		if (Users{}) == userCheck {
-// 		    err = c.Insert(user)
-// 		} else {log.Println("failed, user exists")}
+		 search :=  definition
+		 
+		 q := col.Find(bson.M{"Definition":bson.RegEx{search+".*", "i"}})
+		 count,err := q.Count();
+		 if err != nil{
+			log.Fatal(err)
+		}
 
-// 		if err != nil  {
-//             if mgo.IsDup(err) {
-//                 ErrorWithJSON(w, "User already exists", http.StatusBadRequest)
-//                 return
-//             }
-	   
+		 q = q.Limit(pageSize);
+		 q = q.Skip((pageNumber-1)*pageSize)
+		 
 
-// 	   ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
-// 	       log.Println("Failed insert user: ", err)
-// 	      return
-//       }
-// 	  w.Header().Set("Content-Type", "application/json")
-// 	  w.WriteHeader(http.StatusCreated)
-// 	}
-// }
+		 err = q.All(&cedict)
+
+		 var response = CEDICTWITHSIZE {cedict,count}
+		 
+		respBody, err := json.MarshalIndent(response, "", "  ")
+        if err != nil {
+            log.Fatal(err)
+		}
+		
+		ResponseWithJSON(w, respBody, http.StatusOK)
+
+
+	}
+}
