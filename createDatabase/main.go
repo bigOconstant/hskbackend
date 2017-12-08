@@ -6,7 +6,9 @@ import (
     "io/ioutil"
 	"os"
 	"gopkg.in/mgo.v2"
-	"time"
+    "time"
+    "strings"
+    
 )
 
 const (
@@ -22,7 +24,8 @@ type HSK struct {
 	Simplified string `bson:"Simplified" json:"Simplified"`
 	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
 	Pinyin string `bson:"Pinyin" json:"Pinyin"`
-	Definition string `bson:"Definition" json:"Definition"`
+    Definition string `bson:"Definition" json:"Definition"`
+    Search[] string `bson:"Search" json:"Search"`
 }
 
 func (p HSK) toString() string {
@@ -64,10 +67,30 @@ func main() {
 
 	//fmt.Println(toJson(pages))
 	
-	fmt.Println("Length:",len(pages))
+    fmt.Println("Length:",len(pages))
+    
+    for i := 0; i < len(pages); i++{
+        pages[i].Search = append(pages[i].Search,pages[i].Traditional)
+        pages[i].Search = append(pages[i].Search,pages[i].Simplified)
+
+        PinyinNumbered := strings.Fields(pages[i].PinyinNumbered)
+
+        pages[i].Search = append(pages[i].Search,PinyinNumbered...)
+
+        Pinyin := strings.Fields(pages[i].Pinyin)
+
+        pages[i].Search = append(pages[i].Search,Pinyin...)
+
+        definitionCleaned := strings.Replace(pages[i].Definition,";"," ",-1)
+
+        definitionSplit := strings.Fields(definitionCleaned)
+
+        pages[i].Search = append(pages[i].Search,definitionSplit...)
+		
+    }
 
 	for i := 0; i < len(pages); i++{
-		col.Insert(pages[i]);
+		col.Insert(pages[i])
 		//fmt.Println(pages[i])
     }
     fmt.Println("Done inserting")

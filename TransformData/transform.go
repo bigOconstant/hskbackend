@@ -16,7 +16,7 @@ const (
     database   = "my_database"
     username   = "dev1"
     password   = "password123"
-    collection = "hsk"
+    collection = "cedict"
 )
 // type HSK struct {
 // 	Hanzi string `bson:"Hanzi" json:"Hanzi"`
@@ -24,10 +24,12 @@ const (
 // 	Definition string `bson:"Definition" json:"Definition"`
 // }
 type HSKLevel struct {
-	Hanzi string `bson:"Hanzi" json:"Hanzi"`
-	Pinyin string `bson:"Pinyin" json:"Pinyin"` 
+	Traditional string `bson:"Traditional" json:"Traditional"`
+	Simplified string `bson:"Simplified" json:"Simplified"` 
+	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
+	Pinyin string `bson:"Pinyin" json:"Pinyin"`
 	Definition string `bson:"Definition" json:"Definition"`
-	Level string `bson:"Level" json:"Level"`
+	Search[] string `bson:"Search" json:"Search"`
 }
 
 func main() {
@@ -47,14 +49,14 @@ func main() {
 
 	
 		
-		col := session.DB(database).C("hsk")
+		col := session.DB(database).C(collection)
 
-		var hsk []HSKLevel
+		var cedict []HSKLevel
 		
 
 		
 
-		err := col.Find(bson.M{}).All(&hsk)
+		err := col.Find(bson.M{}).All(&cedict)
 		if err != nil {
            fmt.Println("Error")
             return
@@ -67,7 +69,7 @@ func main() {
 			
 			
 		// }
-		pagesJson, err := json.Marshal(hsk)
+		pagesJson, err := json.Marshal(cedict)
 		ioutil.WriteFile("C:/Users/caleb/Documents/GolangCode/hskParser/hskFull.json",pagesJson, 0644)
 		
 	

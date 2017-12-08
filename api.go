@@ -10,6 +10,9 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
+	"io/ioutil"
+	//"FormValue"
 //	"common/controller.go"
    
 )
@@ -177,20 +180,31 @@ func allHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 func pagedcedictDefinitionSearch(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
     return func(w http.ResponseWriter,r *http.Request){
 		session := s.Copy()
-		pageSize,err := strconv.Atoi(r.URL.Query().Get("pageSize"))
-		definition := r.URL.Query().Get("definition")
+		body, err := ioutil.ReadAll(r.Body)
 
-		pageNumber,err := strconv.Atoi(r.URL.Query().Get("page"))
+		var t Search
+		err = json.Unmarshal(body, &t)
+		if err != nil {
+			panic(err)
+		}
+
+
+		
+		pageSize := t.PageSize
+
+		pageNumber :=t.Page
 
 		var colectionvalue = "cedict"
 		
 		col := session.DB(database).C(colectionvalue)
 
 		 var cedict []CEDICT
-		
-		 search :=  definition
-		 
-		 q := col.Find(bson.M{"Definition":bson.RegEx{search+".*", "i"}})
+		//var stringfields = strings.Fields(t.Search)
+
+		var stringfields = strings.Split(t.Search, " ")
+
+		 q := col.Find(bson.M{"Search":bson.M{"$all": stringfields}})
+
 		 count,err := q.Count();
 		 if err != nil{
 			log.Fatal(err)
@@ -214,3 +228,5 @@ func pagedcedictDefinitionSearch(s *mgo.Session) func(w http.ResponseWriter,r *h
 
 	}
 }
+
+
