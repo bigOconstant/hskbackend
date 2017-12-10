@@ -20,6 +20,7 @@ import (
 func ErrorWithJSON(w http.ResponseWriter, message string, code int) {  
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	//w.Header().Set("Access-Control-Allow-Methods","POST, GET, OPTIONS, PUT, DELETE")
     w.WriteHeader(code)
     fmt.Fprintf(w, "{message: %q}", message)
 }
@@ -27,6 +28,8 @@ func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
 func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {  
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	//Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS'
+	//w.Header().Set("Access-Control-Allow-Methods","POST, GET, OPTIONS, PUT, DELETE")
     w.WriteHeader(code)
     w.Write(json)
 }
@@ -38,7 +41,6 @@ func pagedHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 		hskLevel := r.URL.Query().Get("hskLevel")
 		pageSize,err := strconv.Atoi(r.URL.Query().Get("pageSize"))
 		
-
 		pageNumber,err := strconv.Atoi(r.URL.Query().Get("page"))
 
 		var colectionvalue = "hsk"
@@ -58,7 +60,7 @@ func pagedHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 		default:
 			colectionvalue = ""
 		}
-		col := session.DB(database).C(collection)
+		col := session.DB(database).C("hsk")
 
 		var hsk []HSK
 
@@ -84,7 +86,7 @@ func pagedHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 func pagedcedict(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
     return func(w http.ResponseWriter,r *http.Request){
 		session := s.Copy()
-		//hskLevel := r.URL.Query().Get("hskLevel")
+
 		pageSize,err := strconv.Atoi(r.URL.Query().Get("pageSize"))
 		
 
@@ -142,6 +144,8 @@ func allHsk(s *mgo.Session) func(w http.ResponseWriter,r *http.Request){
 		default:
 			colectionvalue = ""
 		}
+
+		
 		col := session.DB(database).C(collection)
 
 		var hsk []HSK
@@ -189,10 +193,9 @@ func pagedcedictDefinitionSearch(s *mgo.Session) func(w http.ResponseWriter,r *h
 		}
 
 
-		
 		pageSize := t.PageSize
 
-		pageNumber :=t.Page
+		pageNumber :=t.Page +1
 
 		var colectionvalue = "cedict"
 		
@@ -217,7 +220,7 @@ func pagedcedictDefinitionSearch(s *mgo.Session) func(w http.ResponseWriter,r *h
 		 err = q.All(&cedict)
 
 		 var response = CEDICTWITHSIZE {cedict,count}
-		 
+
 		respBody, err := json.MarshalIndent(response, "", "  ")
         if err != nil {
             log.Fatal(err)
