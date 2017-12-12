@@ -80,8 +80,12 @@ func main() {
         Pinyin := strings.Fields(pages[i].Pinyin)
 
         pages[i].Search = append(pages[i].Search,Pinyin...)
+        pages[i].Definition = strings.Replace(pages[i].Definition,";"," ",-1)
 
         definitionCleaned := strings.Replace(pages[i].Definition,";"," ",-1)
+        definitionCleaned = strings.Replace(definitionCleaned,"("," ",-1)
+        definitionCleaned = strings.Replace(definitionCleaned,")"," ",-1)
+        definitionCleaned = strings.ToLower(definitionCleaned);
 
         definitionSplit := strings.Fields(definitionCleaned)
 
