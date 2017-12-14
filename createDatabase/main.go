@@ -13,9 +13,9 @@ import (
 
 const (
     hosts      = "localhost:27017"
-    database   = "my_database"
-    username   = "dev1"
-    password   = "password123"
+    database   = "hanyu"
+    username   = "prodcaleb"
+    password   = "studyhanyudev"
     collection = "cedict"
 )
 

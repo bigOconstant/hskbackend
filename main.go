@@ -7,55 +7,27 @@ import (
 	"fmt"
 	"net/http"
 	"gopkg.in/mgo.v2"
-	
-   
+	"./models"
+	"./controllers"
 )
-const (
-    hosts      = "localhost:27017"
-    database   = "my_database"
-    username   = "dev1"
-    password   = "password123"
-    collection = "cedict"
-	
-)
-
-type HSK struct {
-    Hanzi string `bson:"Hanzi" json:"Hanzi"`
-	Pinyin string `bson:"Pinyin" json:"Pinyin"` 
-	Definition string `bson:"Definition" json:"Definition"`
-	Level string `bson:"Level" json:"Level"`
-}
-type CEDICT struct {
-	Traditional string `bson:"Traditional" json:"Traditional"`
-	Simplified string `bson:"Simplified" json:"Simplified"`
-	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
-	Pinyin string `bson:"Pinyin" json:"Pinyin"`
-	Definition string `bson:"Definition" json:"Definition"`
-	Search[] string `bson:"Search" json:"Search"`
-}
-type CEDICTWITHSIZE struct{
-	Data[] CEDICT `bson:"Data" json:"Data"`
-	Size int `bson:"Size" json:"Size"`
-}
-
-type Search struct {
-	Page int `json:"page"`
-	PageSize int `json:"pageSize"`
-	Search string `json:"search"`
-}
-
-
 
 func main() {
+	conn := models.Connection{
+		"localhost:27017",
+		"my_database",
+		"dev1",
+		"password123",
+		"cedict",
+		"http://localhost:4200",
+		"http://www.localhost:4200"}
 
-	fmt.Println("Starting Application!")
-	
+	fmt.Println("Starting Application!")	
 		info := &mgo.DialInfo {
-			Addrs:    []string{hosts},
+			Addrs:    []string{conn.Hosts},
 			Timeout:  60 * time.Second,
-			Database: database,
-			Username: username,
-			Password: password,
+			Database: conn.Database,
+			Username: conn.Username,
+			Password: conn.Password,
 		}
 
 		session, err1 := mgo.DialWithInfo(info)
@@ -68,14 +40,12 @@ func main() {
 	
 		mux := goji.NewMux()
 
-	//mux.HandleFunc(pat.Get("/"), allUsers(session))
 	
-	mux.HandleFunc(pat.Get("/getAllHsk"), allHsk(session))
-	mux.HandleFunc(pat.Get("/pagedHsk"), pagedHsk(session))
-	mux.HandleFunc(pat.Get("/pagedcedict"), pagedcedict(session))
-	mux.HandleFunc(pat.Post("/pagedcedictDefinitionSearch"), pagedcedictDefinitionSearch(session))
-	
-	//mux.HandleFunc(pat.Post("/adduser"), createUser(session))
+	mux.HandleFunc(pat.Get("/getAllHsk"), api.AllHsk(session,conn))
+	mux.HandleFunc(pat.Get("/pagedHsk"), api.PagedHsk(session,conn))
+	mux.HandleFunc(pat.Get("/pagedcedict"), api.Pagedcedict(session,conn))
+	mux.HandleFunc(pat.Post("/pagedcedictDefinitionSearch"), api.PagedcedictDefinitionSearch(session,conn))
+
 	fmt.Println("Starting server listen and serve!")
 	http.ListenAndServe(":8000", mux)
 
