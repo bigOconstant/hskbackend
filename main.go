@@ -1,25 +1,26 @@
 package main
 
 import (
+	//libraries
 	"time"
 	"goji.io"
 	"goji.io/pat"
 	"fmt"
 	"net/http"
 	"gopkg.in/mgo.v2"
+	"io/ioutil"
+	"encoding/json"
+	//localPackages
 	"./models"
 	"./controllers"
+	"os"
 )
 
 func main() {
-	conn := models.Connection{
-		"localhost:27017",
-		"my_database",
-		"dev1",
-		"password123",
-		"cedict",
-		"http://localhost:4200",
-		"http://www.localhost:4200"}
+
+	conn := getConnection("./connection.json")
+
+	fmt.Println(conn)
 
 	fmt.Println("Starting Application!")	
 		info := &mgo.DialInfo {
@@ -29,7 +30,7 @@ func main() {
 			Username: conn.Username,
 			Password: conn.Password,
 		}
-
+		fmt.Println("Attempting to connect to mongodb")
 		session, err1 := mgo.DialWithInfo(info)
 
 		if err1 != nil {
@@ -46,8 +47,19 @@ func main() {
 	mux.HandleFunc(pat.Get("/pagedcedict"), api.Pagedcedict(session,conn))
 	mux.HandleFunc(pat.Post("/pagedcedictDefinitionSearch"), api.PagedcedictDefinitionSearch(session,conn))
 
-	fmt.Println("Starting server listen and serve!")
+	fmt.Println("Database Connection Successfull :) Listening on port 8000")
 	http.ListenAndServe(":8000", mux)
-
 	
+}
+//./connection.json
+func getConnection(filename string) models.Connection {
+    raw, err := ioutil.ReadFile(filename)
+    if err != nil {
+        fmt.Println(err.Error())
+        os.Exit(1)
+    }
+
+    var c  models.Connection
+    json.Unmarshal(raw, &c)
+    return c
 }
