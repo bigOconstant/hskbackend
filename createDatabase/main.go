@@ -78,7 +78,7 @@ func main() {
 	CedictPages := getCedictPages("./Data/cedict.json")
 
 	fmt.Println("Cedict Length:", len(CedictPages))
-	fmt.Println("Begenning inserting cedict documents into mongodb. Hold on a sec this could take a minute...")
+	fmt.Println("Beginning inserting cedict documents into mongodb. Hold on a sec this could take a minute...")
 
 	for i := 0; i < len(CedictPages); i++ {
 		col.Insert(CedictPages[i])
@@ -95,7 +95,7 @@ func main() {
 
 	fmt.Println("hsk Length:", len(HskPages))
 
-	fmt.Println("Begenning inserting hsk documents into mongodb...")
+	fmt.Println("Beginning inserting hsk documents into mongodb...")
 
 	for i := 0; i < len(HskPages); i++ {
 		col.Insert(HskPages[i])
