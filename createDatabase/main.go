@@ -1,49 +1,62 @@
+//Script to insert data for project
+//Need to think of a cleaner way to do it
+
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "io/ioutil"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
+	"time"
+
 	"gopkg.in/mgo.v2"
-    "time"
-    "strings"
-    
 )
 
 const (
-    hosts      = "localhost:27017"
-    database   = "hanyu"
-    username   = "prodcaleb"
-    password   = "studyhanyudev"
-    collection = "cedict"
+	hosts      = "localhost:27017"
+	database   = "my_database"
+	username   = "dev1"
+	password   = "password123"
+	collection = "cedict"
 )
 
-type HSK struct {
-	Traditional string `bson:"Traditional" json:"Traditional"`
-	Simplified string `bson:"Simplified" json:"Simplified"`
-	PinyinNumbered string `bson:"PinyinNumbered" json:"PinyinNumbered"`
-	Pinyin string `bson:"Pinyin" json:"Pinyin"`
-    Definition string `bson:"Definition" json:"Definition"`
-    Search[] string `bson:"Search" json:"Search"`
+type CEDICTSTRUCT struct {
+	Traditional    string   `bson:"Traditional" json:"Traditional"`
+	Simplified     string   `bson:"Simplified" json:"Simplified"`
+	PinyinNumbered string   `bson:"PinyinNumbered" json:"PinyinNumbered"`
+	Pinyin         string   `bson:"Pinyin" json:"Pinyin"`
+	Definition     string   `bson:"Definition" json:"Definition"`
+	Search         []string `bson:"Search" json:"Search"`
 }
 
-func (p HSK) toString() string {
-    return toJson(p)
+type HSK struct {
+	Hanzi      string `bson:"Hanzi" json:"Hanzi"`
+	Pinyin     string `bson:"Pinyin" json:"Pinyin"`
+	Definition string `bson:"Definition" json:"Definition"`
+	Level      string `bson:"Level" json:"Level"`
+}
+
+func (p CEDICTSTRUCT) toString() string {
+	return toJson(p)
 }
 
 func toJson(p interface{}) string {
-    bytes, err := json.Marshal(p)
-    if err != nil {
-        fmt.Println(err.Error())
-        os.Exit(1)
-    }
+	bytes, err := json.Marshal(p)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 
-    return string(bytes)
+	return string(bytes)
 }
 
 func main() {
-	info := &mgo.DialInfo {
+
+	fmt.Println("Hi there! Lets create those collections...")
+
+	info := &mgo.DialInfo{
 		Addrs:    []string{hosts},
 		Timeout:  60 * time.Second,
 		Database: database,
@@ -51,64 +64,98 @@ func main() {
 		Password: password,
 	}
 	session, err1 := mgo.DialWithInfo(info)
-	
-			if err1 != nil {
-				panic(err1)
-			}
-	
-			defer session.Close()
 
-			col := session.DB(database).C(collection)
+	if err1 != nil {
+		panic(err1)
+	}
 
-    pages := getPages()
-    // for _, p := range pages {
-    //     fmt.Println(p.toString())
-    // }
+	defer session.Close()
 
-	//fmt.Println(toJson(pages))
-	
-    fmt.Println("Length:",len(pages))
-    
-    for i := 0; i < len(pages); i++{
-        pages[i].Search = append(pages[i].Search,pages[i].Traditional)
-        pages[i].Search = append(pages[i].Search,pages[i].Simplified)
+	col := session.DB(database).C(collection)
 
-        PinyinNumbered := strings.Fields(pages[i].PinyinNumbered)
+	fmt.Println("Beginning read of cedict file...")
 
-        pages[i].Search = append(pages[i].Search,PinyinNumbered...)
+	CedictPages := getCedictPages("./Data/cedict.json")
 
-        Pinyin := strings.Fields(pages[i].Pinyin)
+	fmt.Println("Cedict Length:", len(CedictPages))
+	fmt.Println("Begenning inserting cedict documents into mongodb. Hold on a sec this could take a minute...")
 
-        pages[i].Search = append(pages[i].Search,Pinyin...)
-        pages[i].Definition = strings.Replace(pages[i].Definition,";"," ",-1)
-
-        definitionCleaned := strings.Replace(pages[i].Definition,";"," ",-1)
-        definitionCleaned = strings.Replace(definitionCleaned,"("," ",-1)
-        definitionCleaned = strings.Replace(definitionCleaned,")"," ",-1)
-        definitionCleaned = strings.ToLower(definitionCleaned);
-
-        definitionSplit := strings.Fields(definitionCleaned)
-
-        pages[i].Search = append(pages[i].Search,definitionSplit...)
-		
-    }
-
-	for i := 0; i < len(pages); i++{
-		col.Insert(pages[i])
+	for i := 0; i < len(CedictPages); i++ {
+		col.Insert(CedictPages[i])
 		//fmt.Println(pages[i])
-    }
-    fmt.Println("Done inserting")
+	}
+	fmt.Println("Done inserting Cedict")
+	fmt.Println("")
+
+	col = session.DB(database).C("hsk")
+
+	fmt.Println("Beginning read of HSK file...")
+
+	HskPages := getHskPages("./Data/hskAll.json")
+
+	fmt.Println("hsk Length:", len(HskPages))
+
+	fmt.Println("Begenning inserting hsk documents into mongodb...")
+
+	for i := 0; i < len(HskPages); i++ {
+		col.Insert(HskPages[i])
+		//fmt.Println(pages[i])
+	}
+
+	fmt.Println("Done inserting Hsk")
+	fmt.Println("")
+
+	fmt.Println("Done Creating database.")
 
 }
 
-func getPages() []HSK {
-    raw, err := ioutil.ReadFile("./cedict.json")
-    if err != nil {
-        fmt.Println(err.Error())
-        os.Exit(1)
-    }
+func getCedictPages(directory string) []CEDICTSTRUCT {
+	raw, err := ioutil.ReadFile(directory)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 
-    var c []HSK
-    json.Unmarshal(raw, &c)
-    return c
+	var pages []CEDICTSTRUCT
+	json.Unmarshal(raw, &pages)
+
+	for i := 0; i < len(pages); i++ {
+		pages[i].Search = append(pages[i].Search, pages[i].Traditional)
+		pages[i].Search = append(pages[i].Search, pages[i].Simplified)
+
+		PinyinNumbered := strings.Fields(pages[i].PinyinNumbered)
+
+		pages[i].Search = append(pages[i].Search, PinyinNumbered...)
+
+		Pinyin := strings.Fields(pages[i].Pinyin)
+
+		pages[i].Search = append(pages[i].Search, Pinyin...)
+		pages[i].Definition = strings.Replace(pages[i].Definition, ";", " ", -1)
+
+		definitionCleaned := strings.Replace(pages[i].Definition, ";", " ", -1)
+		definitionCleaned = strings.Replace(definitionCleaned, "(", " ", -1)
+		definitionCleaned = strings.Replace(definitionCleaned, ")", " ", -1)
+		definitionCleaned = strings.ToLower(definitionCleaned)
+
+		definitionSplit := strings.Fields(definitionCleaned)
+
+		pages[i].Search = append(pages[i].Search, definitionSplit...)
+
+	}
+
+	return pages
+}
+
+func getHskPages(directory string) []HSK {
+	raw, err := ioutil.ReadFile(directory)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	var pages []HSK
+	json.Unmarshal(raw, &pages)
+
+	return pages
+
 }
