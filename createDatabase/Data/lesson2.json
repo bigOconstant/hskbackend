@@ -1,0 +1,71 @@
+[{
+   "Conversation":[
+      {
+         "Pinyin":"Jiàn kǎi: Nǐ hǎo ma?",
+         "Hanzi":"建恺: 你好 吗?",
+		 "Flag":false
+      },
+      {
+         "Pinyin":"Lǐ Xiāngníng: Wǒ hěn hǎo. Nǐ ne?",
+         "Hanzi":"李香凝:我 很好。你 呢?",
+		 "Flag":false
+      },
+      {
+         "Pinyin":"Jiàn kǎi: Wǒ yě hěn hǎo.",
+         "Hanzi":"建恺: 我 也 很好。",
+		 "Flag":false
+      }
+   ],
+   "Words":[
+      {
+         "Hanzi":"我",
+         "Pinyin":"Wǒ",
+         "Definition":"Me",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"也",
+         "Pinyin":"yě",
+         "Definition":"Also",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"很",
+         "Pinyin":"hěn",
+         "Definition":"Very",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"呢",
+         "Pinyin":"ne",
+         "Definition":"particle indicating that a previously asked question is to be applied to the preceding word",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"你",
+         "Pinyin":"Nǐ",
+         "Definition":"You",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"好",
+         "Pinyin":"hǎo",
+         "Definition":"Good",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"你好",
+         "Pinyin":"Nǐhǎo",
+         "Definition":"Hello;Hey;Hi",
+         "Isnew":true
+      },
+      {
+         "Hanzi":"吗",
+         "Pinyin":"ma",
+         "Definition":"Question marker;Indicates a question",
+         "Isnew":true
+      }
+   ],
+   "Lesson":2
+}
+]

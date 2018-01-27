@@ -38,6 +38,25 @@ type HSK struct {
 	Level      string `bson:"Level" json:"Level"`
 }
 
+type Convo struct {
+	Pinyin string `bson:"Pinyin" json:"Pinyin"`
+	Hanzi  string `bson:"Hanzi" json:"Hanzi"`
+	Flag   bool   `bson:"Flag" json:"Flag"`
+}
+
+type Word struct {
+	Pinyin     string `bson:"Pinyin" json:"Pinyin"`
+	Hanzi      string `bson:"Hanzi" json:"Hanzi"`
+	Definition string `bson:"Definition" json:"Definition"`
+	Isnew      bool   `bson:"Isnew" json:"Isnew"`
+}
+
+type Lesson struct {
+	Conversation []Convo
+	Words        []Word
+	Lesson       int `bson:"Lesson" json:"Lesson"`
+}
+
 func (p CEDICTSTRUCT) toString() string {
 	return toJson(p)
 }
@@ -79,12 +98,22 @@ func main() {
 
 	fmt.Println("Cedict Length:", len(CedictPages))
 	fmt.Println("Beginning inserting cedict documents into mongodb. Hold on a sec this could take a minute...")
+    start := time.Now()
 
+	var devisor int = len(CedictPages)/100;
+	
+
+	var percent int = 0;
 	for i := 0; i < len(CedictPages); i++ {
+		if i % devisor == 0 {
+			fmt.Println(percent,"%");
+			percent = percent +1;
+		}
 		col.Insert(CedictPages[i])
 		//fmt.Println(pages[i])
 	}
-	fmt.Println("Done inserting Cedict")
+	
+	fmt.Println("Done inserting Cedict in ",time.Since(start)," seconds")
 	fmt.Println("")
 
 	col = session.DB(database).C("hsk")
@@ -102,7 +131,24 @@ func main() {
 		//fmt.Println(pages[i])
 	}
 
+
 	fmt.Println("Done inserting Hsk")
+	fmt.Println("")
+
+	lessons := getLessons("./Data/lesson2.json")
+
+	col = session.DB(database).C("lessons")
+
+	fmt.Println("Beginning inserting lesson documents into mongodb !...")
+
+
+	for i := 0; i < len(lessons); i++ {
+	
+		col.Insert(lessons[i])
+		//fmt.Println(pages[i])
+	}
+
+	fmt.Println("Done inserting lessons")
 	fmt.Println("")
 
 	fmt.Println("Done Creating database.")
@@ -154,6 +200,20 @@ func getHskPages(directory string) []HSK {
 	}
 
 	var pages []HSK
+	json.Unmarshal(raw, &pages)
+
+	return pages
+
+}
+
+func getLessons(directory string) []Lesson {
+	raw, err := ioutil.ReadFile(directory)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	var pages []Lesson
 	json.Unmarshal(raw, &pages)
 
 	return pages
