@@ -193,46 +193,78 @@ func PagedcedictDefinitionSearch(s *mgo.Session, conn models.Connection) func(w 
 			log.Println("Not allowed ", nil)
 			return
 		} else {
-
 			var t models.Search
 			err = json.Unmarshal(body, &t)
 			if err != nil {
 				panic(err)
 			}
-
 			pageSize := t.PageSize
-
 			pageNumber := t.Page + 1
-
 			var colectionvalue = "cedict"
-
 			col := session.DB(conn.Database).C(colectionvalue)
-
 			var cedict []models.CEDICT
-
 			var stringfields = strings.Split(t.Search, " ")
-
 			q := col.Find(bson.M{"Search": bson.M{"$all": stringfields}})
-
 			count, err := q.Count()
 			if err != nil {
 				log.Fatal(err)
 			}
-
 			q = q.Limit(pageSize)
 			q = q.Skip((pageNumber - 1) * pageSize)
-
 			err = q.All(&cedict)
-
 			var response = models.CEDICTWITHSIZE{cedict, count}
-
 			respBody, err := json.MarshalIndent(response, "", "  ")
+			if err != nil {
+				log.Fatal(err)
+			}
+			ResponseWithJSON(w, respBody, http.StatusOK)
+		}
+
+	}
+}
+
+func GetLesson(s *mgo.Session, conn models.Connection) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+
+		origin := r.Header.Get("Origin")
+		fmt.Println("origin = ", origin)
+		fmt.Println("conn = ", conn)
+
+		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
+			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
+			log.Println("Not allowed", nil)
+			return
+		} else {
+
+			lessonNumber, err := strconv.Atoi(r.URL.Query().Get("lesson"))
+
+			fmt.Println("Lesson number = ", lessonNumber)
+
+			col := session.DB(conn.Database).C("lessons")
+
+			var lessons []models.Lesson
+
+			q := col.Find(bson.M{"Lesson": lessonNumber})
+
+			fmt.Println("Executing query")
+			err = q.All(&lessons)
+
+			fmt.Println("Done Executing Query")
+
+			var lesson models.Lesson
+
+			if len(lessons) > 0 {
+				lesson = lessons[0]
+			}
+
+			respBody, err := json.MarshalIndent(lesson, "", "  ")
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			ResponseWithJSON(w, respBody, http.StatusOK)
-		}
 
+		}
 	}
 }
