@@ -228,8 +228,6 @@ func GetLesson(s *mgo.Session, conn models.Connection) func(w http.ResponseWrite
 		session := s.Copy()
 
 		origin := r.Header.Get("Origin")
-		fmt.Println("origin = ", origin)
-		fmt.Println("conn = ", conn)
 
 		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
 			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
@@ -239,18 +237,13 @@ func GetLesson(s *mgo.Session, conn models.Connection) func(w http.ResponseWrite
 
 			lessonNumber, err := strconv.Atoi(r.URL.Query().Get("lesson"))
 
-			fmt.Println("Lesson number = ", lessonNumber)
-
 			col := session.DB(conn.Database).C("lessons")
 
 			var lessons []models.Lesson
 
 			q := col.Find(bson.M{"Lesson": lessonNumber})
 
-			fmt.Println("Executing query")
 			err = q.All(&lessons)
-
-			fmt.Println("Done Executing Query")
 
 			var lesson models.Lesson
 

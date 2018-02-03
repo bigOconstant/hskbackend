@@ -39,9 +39,10 @@ type HSK struct {
 }
 
 type Convo struct {
-	Pinyin string `bson:"Pinyin" json:"Pinyin"`
-	Hanzi  string `bson:"Hanzi" json:"Hanzi"`
-	Flag   bool   `bson:"Flag" json:"Flag"`
+	Pinyin  string `bson:"Pinyin" json:"Pinyin"`
+	Hanzi   string `bson:"Hanzi" json:"Hanzi"`
+	English string `bson:"English" json:"English"`
+	Flag    bool   `bson:"Flag" json:"Flag"`
 }
 
 type Word struct {
@@ -98,22 +99,21 @@ func main() {
 
 	fmt.Println("Cedict Length:", len(CedictPages))
 	fmt.Println("Beginning inserting cedict documents into mongodb. Hold on a sec this could take a minute...")
-    start := time.Now()
+	start := time.Now()
 
-	var devisor int = len(CedictPages)/100;
-	
+	var devisor int = len(CedictPages) / 100
 
-	var percent int = 0;
+	var percent int = 0
 	for i := 0; i < len(CedictPages); i++ {
-		if i % devisor == 0 {
-			fmt.Println(percent,"%");
-			percent = percent +1;
+		if i%devisor == 0 {
+			fmt.Println(percent, "%")
+			percent = percent + 1
 		}
 		col.Insert(CedictPages[i])
 		//fmt.Println(pages[i])
 	}
-	
-	fmt.Println("Done inserting Cedict in ",time.Since(start)," seconds")
+
+	fmt.Println("Done inserting Cedict in ", time.Since(start), " seconds")
 	fmt.Println("")
 
 	col = session.DB(database).C("hsk")
@@ -131,7 +131,6 @@ func main() {
 		//fmt.Println(pages[i])
 	}
 
-
 	fmt.Println("Done inserting Hsk")
 	fmt.Println("")
 
@@ -141,9 +140,8 @@ func main() {
 
 	fmt.Println("Beginning inserting lesson documents into mongodb !...")
 
-
 	for i := 0; i < len(lessons); i++ {
-	
+
 		col.Insert(lessons[i])
 		//fmt.Println(pages[i])
 	}

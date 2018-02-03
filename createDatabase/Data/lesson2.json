@@ -1,18 +1,33 @@
 [{
    "Conversation":[
       {
+        "Pinyin":"Jiàn kǎi: Nǐ hǎo", 
+        "Hanzi":"建恺: 你好",
+        "English":"Jian Kai: Hello",
+        "Flag":false
+      },
+      {
+        "Pinyin":"Lǐ Xiāngníng: Nǐ hǎo", 
+        "Hanzi":"李香凝: 你好",
+        "English":"Li Xiangning: Hello",
+        "Flag":false
+      },
+       {
          "Pinyin":"Jiàn kǎi: Nǐ hǎo ma?",
          "Hanzi":"建恺: 你好 吗?",
+         "English":"Jian Kai: How are you?",
 		 "Flag":false
       },
       {
          "Pinyin":"Lǐ Xiāngníng: Wǒ hěn hǎo. Nǐ ne?",
          "Hanzi":"李香凝:我 很好。你 呢?",
+         "English":"Li xiangning: I'm Good. And you?",
 		 "Flag":false
       },
       {
          "Pinyin":"Jiàn kǎi: Wǒ yě hěn hǎo.",
          "Hanzi":"建恺: 我 也 很好。",
+         "English":"Jian Kai: I'm also good",
 		 "Flag":false
       }
    ],

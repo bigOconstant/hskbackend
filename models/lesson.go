@@ -1,8 +1,10 @@
 package models
+
 type Convo struct {
-	Pinyin string `bson:"Pinyin" json:"Pinyin"`
-	Hanzi  string `bson:"Hanzi" json:"Hanzi"`
-	Flag   bool   `bson:"Flag" json:"Flag"`
+	Pinyin  string `bson:"Pinyin" json:"Pinyin"`
+	Hanzi   string `bson:"Hanzi" json:"Hanzi"`
+	English string `bson:"English" json:"English"`
+	Flag    bool   `bson:"Flag" json:"Flag"`
 }
 
 type Word struct {
