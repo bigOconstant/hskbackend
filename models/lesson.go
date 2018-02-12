@@ -11,6 +11,7 @@ type Word struct {
 	Pinyin     string `bson:"Pinyin" json:"Pinyin"`
 	Hanzi      string `bson:"Hanzi" json:"Hanzi"`
 	Definition string `bson:"Definition" json:"Definition"`
+	File       string `bson:"File" json:"File"`
 	Isnew      bool   `bson:"Isnew" json:"Isnew"`
 }
 

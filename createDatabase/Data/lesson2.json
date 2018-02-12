@@ -36,48 +36,56 @@
          "Hanzi":"我",
          "Pinyin":"Wǒ",
          "Definition":"Me",
+         "File":"assets/sounds/wo.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"也",
          "Pinyin":"yě",
          "Definition":"Also",
+         "File":"assets/sounds/ye.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"很",
          "Pinyin":"hěn",
          "Definition":"Very",
+         "File":"assets/sounds/hen.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"呢",
          "Pinyin":"ne",
          "Definition":"particle indicating that a previously asked question is to be applied to the preceding word",
+         "File":"assets/sounds/ne.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"你",
          "Pinyin":"Nǐ",
          "Definition":"You",
+         "File":"assets/sounds/ni.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"好",
          "Pinyin":"hǎo",
          "Definition":"Good",
+         "File":"assets/sounds/hao.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"你好",
-         "Pinyin":"Nǐhǎo",
+         "Pinyin":"Nǐ hǎo",
          "Definition":"Hello;Hey;Hi",
+         "File":"assets/sounds/nihao.m4a",
          "Isnew":true
       },
       {
          "Hanzi":"吗",
          "Pinyin":"ma",
          "Definition":"Question marker;Indicates a question",
+         "File":"assets/sounds/ma.m4a",
          "Isnew":true
       }
    ],

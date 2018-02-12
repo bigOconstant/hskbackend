@@ -34,7 +34,7 @@ func PagedHsk(s *mgo.Session, conn models.Connection) func(w http.ResponseWriter
 
 		origin := r.Header.Get("Origin")
 
-		if origin != conn.Origin1 && origin != conn.Origin2 {
+		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
 			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
 			log.Println("Not allowed ", nil)
 			return
@@ -85,7 +85,7 @@ func Pagedcedict(s *mgo.Session, conn models.Connection) func(w http.ResponseWri
 		session := s.Copy()
 		origin := r.Header.Get("Origin")
 
-		if origin != conn.Origin1 && origin != conn.Origin2 {
+		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
 			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
 			log.Println("Not allowed ", nil)
 			return
@@ -124,7 +124,7 @@ func AllHsk(s *mgo.Session, conn models.Connection) func(w http.ResponseWriter, 
 		session := s.Copy()
 		origin := r.Header.Get("Origin")
 
-		if origin != conn.Origin1 && origin != conn.Origin2 {
+		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
 			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
 			log.Println("Not allowed ", nil)
 			return
@@ -188,7 +188,7 @@ func PagedcedictDefinitionSearch(s *mgo.Session, conn models.Connection) func(w 
 		body, err := ioutil.ReadAll(r.Body)
 		origin := r.Header.Get("Origin")
 
-		if origin != conn.Origin1 && origin != conn.Origin2 {
+		if conn.Prod && origin != conn.Origin1 && origin != conn.Origin2 {
 			ErrorWithJSON(w, "Database error", http.StatusBadRequest)
 			log.Println("Not allowed ", nil)
 			return
