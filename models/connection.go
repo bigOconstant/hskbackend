@@ -9,4 +9,5 @@ type Connection struct {
 	Origin1    string `bson:"Origin1" json:"Origin1"`
 	Origin2    string `bson:"Origin2" json:"Origin2"`
 	Prod       bool   `bson:"Prod" json:"Prod"`
+	Port       string `bson:"Port" json:"Port"`
 }

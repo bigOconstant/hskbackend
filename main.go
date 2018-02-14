@@ -49,8 +49,8 @@ func main() {
 	mux.HandleFunc(pat.Post("/pagedcedictDefinitionSearch"), api.PagedcedictDefinitionSearch(session, conn))
 	mux.HandleFunc(pat.Get("/Lesson"), api.GetLesson(session, conn))
 
-	fmt.Println("Database Connection Successfull :) Listening on port 8000")
-	http.ListenAndServe(":8000", mux)
+	fmt.Println("Database Connection Successfull :) Listening on port ", conn.Port)
+	http.ListenAndServe(conn.Port, mux)
 
 }
 
