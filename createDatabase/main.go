@@ -28,6 +28,7 @@ type CEDICTSTRUCT struct {
 	PinyinNumbered string   `bson:"PinyinNumbered" json:"PinyinNumbered"`
 	Pinyin         string   `bson:"Pinyin" json:"Pinyin"`
 	Definition     string   `bson:"Definition" json:"Definition"`
+	Level          string   `bson:"Level" json:"Level"`
 	Search         []string `bson:"Search" json:"Search"`
 }
 
@@ -175,7 +176,7 @@ func getCedictPages(directory string) []CEDICTSTRUCT {
 		Pinyin := strings.Fields(pages[i].Pinyin)
 
 		pages[i].Search = append(pages[i].Search, Pinyin...)
-		pages[i].Definition = strings.Replace(pages[i].Definition, ";", " ", -1)
+		pages[i].Definition = strings.Replace(pages[i].Definition, ";", " ; ", -1)
 
 		definitionCleaned := strings.Replace(pages[i].Definition, ";", " ", -1)
 		definitionCleaned = strings.Replace(definitionCleaned, "(", " ", -1)
