@@ -50,7 +50,14 @@ func main() {
 	mux.HandleFunc(pat.Get("/Lesson"), api.GetLesson(session, conn))
 
 	fmt.Println("Database Connection Successfull :) Listening on port ", conn.Port)
-	http.ListenAndServe(conn.Port, mux)
+
+	if err := http.ListenAndServe(":8000", mux); err != nil {
+		// cannot panic, because this probably is an intentional close
+		fmt.Println("Httpserver: ListenAndServe() error:", err)
+	}
+
+	//	http.ListenAndServe(conn.Port, mux)
+	fmt.Println("Listening hopefully")
 
 }
 

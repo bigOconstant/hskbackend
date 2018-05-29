@@ -1,17 +1,17 @@
 package api
 
 import (
+	"../components"
+	"../models"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"../models"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
@@ -41,35 +41,13 @@ func PagedHsk(s *mgo.Session, conn models.Connection) func(w http.ResponseWriter
 		} else {
 
 			hskLevel := r.URL.Query().Get("hskLevel")
+			ccomponent := component.NewCedictComponent(session, conn)
 			pageSize, err := strconv.Atoi(r.URL.Query().Get("pageSize"))
-
 			pageNumber, err := strconv.Atoi(r.URL.Query().Get("page"))
 
-			var level = "hsk"
-			switch hskLevel {
-			case "1":
-				level = "hsk1"
-			case "2":
-				level = "hsk2"
-			case "3":
-				level = "hsk3"
-			case "4":
-				level = "hsk4"
-			case "5":
-				level = "hsk5"
-			case "6":
-				level = "hsk6"
-			default:
-				level = ""
-			}
-			col := session.DB(conn.Database).C("hsk")
+			var response = ccomponent.GetPagedHsk(hskLevel, pageSize, pageNumber)
 
-			var hsk []models.HSK
-
-			q := col.Find(bson.M{"Level": level}).Limit(pageSize)
-			q = q.Skip((pageNumber - 1) * pageSize)
-			err = q.All(&hsk)
-			respBody, err := json.MarshalIndent(hsk, "", "  ")
+			respBody, err := json.MarshalIndent(response, "", "  ")
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -102,7 +80,7 @@ func Pagedcedict(s *mgo.Session, conn models.Connection) func(w http.ResponseWri
 			if err != nil {
 				log.Fatal(err)
 			}
-			q := col.Find(bson.M{}).Limit(pageSize)
+			q := col.Find(bson.M{}).Sort("Pinyin").Limit(pageSize)
 			q = q.Skip((pageNumber - 1) * pageSize)
 			err = q.All(&cedict)
 
